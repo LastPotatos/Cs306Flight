@@ -3,11 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
-<<<<<<< HEAD
--- Generation Time: Mar 20, 2026 at 12:08 PM
-=======
--- Generation Time: Mar 20, 2026 at 12:01 PM
->>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
+-- Generation Time: Mar 20, 2026 at 12:32 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,6 +20,21 @@ SET time_zone = "+00:00";
 --
 -- Database: `flight diary`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `airport`
+--
+
+CREATE TABLE `airport` (
+  `Gate Delay` int(11) NOT NULL,
+  `Coordinate` varchar(40) NOT NULL,
+  `ICAO code` varchar(10) NOT NULL,
+  `IATA code` varchar(3) NOT NULL,
+  `Runways` varchar(20) NOT NULL,
+  `taxi length(minutes)` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -45,26 +56,34 @@ CREATE TABLE `flight` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `path`
+--
+
+CREATE TABLE `path` (
+  `Flight Number` varchar(6) NOT NULL,
+  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Speed` int(11) NOT NULL,
+  `Coordinate` varchar(20) NOT NULL,
+  `Altitude` int(11) NOT NULL,
+  `Heading` varchar(5) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ticket`
 --
 
 CREATE TABLE `ticket` (
-<<<<<<< HEAD
   `E-mail` varchar(50) NOT NULL,
-=======
->>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
   `Flight Number` varchar(6) NOT NULL,
   `Date` datetime NOT NULL,
   `Seat` varchar(3) NOT NULL,
   `Class` varchar(50) NOT NULL,
   `Add-ons` varchar(100) NOT NULL,
   `Price` int(11) NOT NULL,
-<<<<<<< HEAD
   `Currency` varchar(50) NOT NULL,
   `Airline Points` varchar(50) NOT NULL
-=======
-  `Currency` varchar(50) NOT NULL
->>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -92,16 +111,18 @@ ALTER TABLE `flight`
   ADD UNIQUE KEY `E-mail` (`E-mail`);
 
 --
+-- Indexes for table `path`
+--
+ALTER TABLE `path`
+  ADD PRIMARY KEY (`Flight Number`,`TimeStamp`);
+
+--
 -- Indexes for table `ticket`
 --
 ALTER TABLE `ticket`
   ADD PRIMARY KEY (`Flight Number`,`Date`,`Seat`),
-<<<<<<< HEAD
   ADD KEY `For Relation` (`Date`,`Flight Number`),
   ADD KEY `Buys Relation` (`E-mail`);
-=======
-  ADD KEY `For Relation` (`Date`,`Flight Number`);
->>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
 
 --
 -- Indexes for table `user`
@@ -121,13 +142,16 @@ ALTER TABLE `flight`
   ADD CONSTRAINT `Logs Relation` FOREIGN KEY (`E-mail`) REFERENCES `user` (`E-mail`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `path`
+--
+ALTER TABLE `path`
+  ADD CONSTRAINT `Flies on relation` FOREIGN KEY (`Flight Number`) REFERENCES `flight` (`Flight Number`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `ticket`
 --
 ALTER TABLE `ticket`
-<<<<<<< HEAD
   ADD CONSTRAINT `Buys Relation` FOREIGN KEY (`E-mail`) REFERENCES `user` (`E-mail`) ON DELETE CASCADE ON UPDATE CASCADE,
-=======
->>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
   ADD CONSTRAINT `For Relation` FOREIGN KEY (`Date`,`Flight Number`) REFERENCES `flight` (`Date`, `Flight Number`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
