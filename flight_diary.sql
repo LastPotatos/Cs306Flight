@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
+<<<<<<< HEAD
 -- Generation Time: Mar 20, 2026 at 12:08 PM
+=======
+-- Generation Time: Mar 20, 2026 at 12:01 PM
+>>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,15 +49,22 @@ CREATE TABLE `flight` (
 --
 
 CREATE TABLE `ticket` (
+<<<<<<< HEAD
   `E-mail` varchar(50) NOT NULL,
+=======
+>>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
   `Flight Number` varchar(6) NOT NULL,
   `Date` datetime NOT NULL,
   `Seat` varchar(3) NOT NULL,
   `Class` varchar(50) NOT NULL,
   `Add-ons` varchar(100) NOT NULL,
   `Price` int(11) NOT NULL,
+<<<<<<< HEAD
   `Currency` varchar(50) NOT NULL,
   `Airline Points` varchar(50) NOT NULL
+=======
+  `Currency` varchar(50) NOT NULL
+>>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -85,8 +96,12 @@ ALTER TABLE `flight`
 --
 ALTER TABLE `ticket`
   ADD PRIMARY KEY (`Flight Number`,`Date`,`Seat`),
+<<<<<<< HEAD
   ADD KEY `For Relation` (`Date`,`Flight Number`),
   ADD KEY `Buys Relation` (`E-mail`);
+=======
+  ADD KEY `For Relation` (`Date`,`Flight Number`);
+>>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
 
 --
 -- Indexes for table `user`
@@ -109,7 +124,10 @@ ALTER TABLE `flight`
 -- Constraints for table `ticket`
 --
 ALTER TABLE `ticket`
+<<<<<<< HEAD
   ADD CONSTRAINT `Buys Relation` FOREIGN KEY (`E-mail`) REFERENCES `user` (`E-mail`) ON DELETE CASCADE ON UPDATE CASCADE,
+=======
+>>>>>>> 6b5440a61921d5591a34d124415b76d66367464e
   ADD CONSTRAINT `For Relation` FOREIGN KEY (`Date`,`Flight Number`) REFERENCES `flight` (`Date`, `Flight Number`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
