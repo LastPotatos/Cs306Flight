@@ -7,207 +7,134 @@
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+-- CODE HERE WAS MODIFIED IN ORDER TO CLEAN UP AND SIMPLIFY THE DATABASE STRUCTURE FOR THIS PROJECT.
 
 --
 -- Database: `flight diary`
 --
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `aircraft`
+-- Table structure for table user
 --
 
-CREATE TABLE `aircraft` (
-  `Registration-Number` varchar(8) NOT NULL,
-  `ICAO code of the airline` varchar(3) NOT NULL,
-  `Type` varchar(15) NOT NULL,
-  `SeetConfigs` text NOT NULL,
-  `Capacity` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE user (
+  username varchar(50) NOT NULL, -- User's name
+  email varchar(100) PRIMARY KEY NOT NULL, -- User's email address as identifier.
+  passwd varchar(256) NOT NULL -- User's salted password
+);
+
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `airline`
+-- Table structure for table airline
 --
 
-CREATE TABLE `airline` (
-  `Name` text NOT NULL,
-  `ICAO` varchar(3) NOT NULL,
-  `Fleet Size` int(11) NOT NULL,
-  `IATA code` varchar(3) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `airport`
---
-
-CREATE TABLE `airport` (
-  `Gate Delay` int(11) NOT NULL,
-  `Coordinate` varchar(40) NOT NULL,
-  `ICAO code` varchar(10) NOT NULL,
-  `IATA code` varchar(3) NOT NULL,
-  `Runways` varchar(20) NOT NULL,
-  `taxi length(minutes)` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE airline (
+  aname text NOT NULL, -- Airline's name in English
+  codeICAO varchar(3) PRIMARY KEY NOT NULL, -- Airline's 3 letter ICAO code, used for callsign identifiers. (Example: PGT for Pegasus Airlines)
+  codeIATA varchar(2) NOT NULL, -- Airline's 2 letter IATA code, used for ticketing and flight numbers. (Example: PC for Pegasus Airlines)
+  destinationSize int(11), -- Number of destinations served by the airline. Can be null as it may be unknown.
+  hubAirports varchar(100), -- Comma separated list of the airline's hub airports as airport's ICAO codes (Example: LTFJ,LTAI).
+);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `flight`
+-- Table structure for table aircraft
 --
 
-CREATE TABLE `flight` (
-  `E-mail` varchar(100) NOT NULL,
-  `Aircraft-Registration` varchar(8) NOT NULL,
-  `D_Airport_ICAO` varchar(6) NOT NULL,
-  `A_Airport_ICAO` varchar(6) NOT NULL,
-  `Date` datetime NOT NULL,
-  `Flight Number` varchar(6) NOT NULL,
-  `SDeparture` datetime NOT NULL,
-  `SArrival` datetime NOT NULL,
-  `Description` text NOT NULL,
-  `ADeparture` datetime NOT NULL,
-  `AArrival` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE aircraft (
+  registration varchar(8) PRIMARY KEY NOT NULL, -- Aircraft's registration number, found on the tail of the aircraft. (Example: TC-JDM)
+  airlineICAO varchar(3), -- ICAO code of the airline that owns the aircraft. This is a foreign key referencing the airline table.
+  model varchar(50), -- Aircraft's model (Example: B738 for Boeing 737-800)
+  seatConfig text, -- Comma seperated list of the number of seats seperated by aisle for each row for each class. (Example: 3-3,2-2)
+  capacity int(11) NOT NULL, -- Total number of seats on the aircraft.
+  CONSTRAINT airlineOwnsAircraft FOREIGN KEY (airlineICAO) REFERENCES airline (codeICAO) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `path`
+-- Table structure for table airport
 --
 
-CREATE TABLE `path` (
-  `Flight Number` varchar(6) NOT NULL,
-  `TimeStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `Speed` int(11) NOT NULL,
-  `Coordinate` varchar(20) NOT NULL,
-  `Altitude` int(11) NOT NULL,
-  `Heading` varchar(5) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `ticket`
---
-
-CREATE TABLE `ticket` (
-  `E-mail` varchar(50) NOT NULL,
-  `Flight Number` varchar(6) NOT NULL,
-  `Date` datetime NOT NULL,
-  `Seat` varchar(3) NOT NULL,
-  `Class` varchar(50) NOT NULL,
-  `Add-ons` varchar(100) NOT NULL,
-  `Price` int(11) NOT NULL,
-  `Currency` varchar(50) NOT NULL,
-  `Airline Points` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE airport (
+  latitude float(11) NOT NULL, -- Airport's latitude coordinate
+  longitude float(11) NOT NULL, -- Airport's longitude coordinate
+  codeICAO varchar(4) NOT NULL, -- Airport's 4 letter code, used for planning in flight computers. (Example: LTAF for Adana Şakirpaşa Airport)
+  codeIATA varchar(3), -- Airport's 3 letter code found on tickets and baggage tags. (Example: UAB for Adana İncirlik Air Base)
+  runways varchar(100) NOT NULL, -- Comma seperated list of runway numbers (Example: 36,35L,35R,34L,34R,18,17L,17R,16L,16R for Istanbul Airport)
+  pname varchar(100) NOT NULL, -- Airport's name (Example: İstanbul Sabiha Gökçen)
+  city varchar(100) NOT NULL, -- The city the airport is located in (Example: İstanbul)
+  country varchar(2) NOT NULL, -- The country the airport is located in as a 2 letter ISO code (Example: TR for Turkey)
+  avgAircraftToRunway int(11), -- Average time of taxiing in minutes
+  avgGateToAircraftByBus int(11), -- Average time of passenger bus transfer in minutes
+);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Table structure for table flight
 --
 
-CREATE TABLE `user` (
-  `Name` varchar(50) NOT NULL,
-  `E-mail` varchar(100) NOT NULL,
-  `Password` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE flight (
+  email varchar(100) NOT NULL, -- Email of the user who took the flight.
+  aircraftRegistration varchar(8) NOT NULL, -- Aircraft's registration number of this flight, found on the tail of the aircraft. (Example: TC-JDM)
+  departedAirport varchar(6) NOT NULL, -- ICAO code of the airport where the flight departed.
+  arrivedAirport varchar(6) NOT NULL, -- ICAO code of the airport where the flight arrived.
+  flightDate datetime NOT NULL, -- Date of the flight.
+  flightNumber varchar(6) NOT NULL, -- The number found on the ticket.
+  scheduledDeparture datetime NOT NULL, -- Scheduled departure time according to the airline.
+  scheduledArrival datetime NOT NULL, -- Scheduled arrival time according to the airline.
+  comments text, -- User's comments about the flight, can include any details.
+  actualDeparture datetime NOT NULL, -- Actual departure time according to the user/flight path.
+  actualArrival datetime NOT NULL, -- Actual arrival time according to the user/flight path.
+  PRIMARY KEY (flightNumber, flightDate),
+  CONSTRAINT userLogsFlight FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT flightUsesAircraft FOREIGN KEY (aircraftRegistration) REFERENCES aircraft (registration) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- --------------------------------------------------------
 
 --
--- Indexes for dumped tables
+-- Table structure for table path
 --
 
---
--- Indexes for table `aircraft`
---
-ALTER TABLE `aircraft`
-  ADD PRIMARY KEY (`Registration-Number`),
-  ADD UNIQUE KEY `ICAO code of the airline` (`ICAO code of the airline`);
+CREATE TABLE path (
+  flightNumber varchar(6) NOT NULL, -- The flight number this path point belongs to.
+  epochTimestamp timestamp NOT NULL, -- The timestamp of the path point.
+  speed int(11) NOT NULL, -- The speed of the aircraft at this path point in knots (Nautical Miles per hour).
+  latitude float(11) NOT NULL, -- The latitude coordinate of the path point.
+  longitude float(11) NOT NULL, -- The longitude coordinate of the path point.
+  altitude int(11) NOT NULL, -- The altitude of the aircraft at this path point in feet.
+  heading float(11) NOT NULL, -- The heading of the aircraft at this path point in degrees.
+  PRIMARY KEY (flightNumber,epochTimestamp),
+  CONSTRAINT flightFliesOn FOREIGN KEY (flightNumber) REFERENCES flight (flightNumber) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- --------------------------------------------------------
 
 --
--- Indexes for table `airline`
---
-ALTER TABLE `airline`
-  ADD PRIMARY KEY (`ICAO`);
-
---
--- Indexes for table `flight`
---
-ALTER TABLE `flight`
-  ADD PRIMARY KEY (`Flight Number`,`Date`),
-  ADD UNIQUE KEY `Date` (`Date`,`Flight Number`),
-  ADD UNIQUE KEY `E-mail` (`E-mail`),
-  ADD UNIQUE KEY `Aircraft-Registration` (`Aircraft-Registration`),
-  ADD UNIQUE KEY `A_Airport_ICAO` (`A_Airport_ICAO`),
-  ADD UNIQUE KEY `D_Airport_ICAO` (`D_Airport_ICAO`);
-
---
--- Indexes for table `path`
---
-ALTER TABLE `path`
-  ADD PRIMARY KEY (`Flight Number`,`TimeStamp`);
-
---
--- Indexes for table `ticket`
---
-ALTER TABLE `ticket`
-  ADD PRIMARY KEY (`Flight Number`,`Date`,`Seat`),
-  ADD KEY `For Relation` (`Date`,`Flight Number`),
-  ADD KEY `Buys Relation` (`E-mail`);
-
---
--- Indexes for table `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`E-mail`),
-  ADD UNIQUE KEY `E-mail` (`E-mail`);
-
---
--- Constraints for dumped tables
+-- Table structure for table ticket
 --
 
---
--- Constraints for table `aircraft`
---
-ALTER TABLE `aircraft`
-  ADD CONSTRAINT `owns relation` FOREIGN KEY (`ICAO code of the airline`) REFERENCES `airline` (`ICAO`) ON DELETE CASCADE ON UPDATE CASCADE;
+CREATE TABLE ticket (
+  email varchar(50) NOT NULL, -- Email of the user who purchased the ticket.
+  flightNumber varchar(6) NOT NULL, -- The flight number this ticket is for.
+  flightDate datetime NOT NULL, -- Date of the flight.
+  seat varchar(3), -- The seat number assigned to the user.
+  class varchar(50), -- The class of the ticket.
+  addOns varchar(100), -- Comma seperated list of add-ons purchased with the ticket (Example: BDML,XBAG,SEAT,FLEX for a ticket with a pre-ordered meal, extra baggage and seat selection and flexible add-ons)
+  price int(11), -- The price paid for the ticket in real form currency.
+  currency varchar(50) -- The currency of the price paid for the ticket (Example: USD, EUR, TRY).
+  ticketAirlineICAO varchar(3), -- This is the airline that issued the ticket, not necessarily the airline operating the flight
+  pointsUsed int(11), -- The price paid for the ticket in the ticket issuer airline's frequent flier points.
+  pointsReceived int(11), -- The ticket issuer airline's frequent flier points received from taking the flight for getting award tickets.
+  pointsReceivedXP int(11), -- The ticket issuer airline's frequent flier experience received from taking the flight for upgrading in the program.
+  PRIMARY KEY (flightNumber,flightDate),
+  CONSTRAINT userBuysTicket FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT ticketIsForFlight FOREIGN KEY (flightNumber,flightDate) REFERENCES flight (flightNumber, flightDate) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
---
--- Constraints for table `flight`
---
-ALTER TABLE `flight`
-  ADD CONSTRAINT `Logs Relation` FOREIGN KEY (`E-mail`) REFERENCES `user` (`E-mail`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `uses relation` FOREIGN KEY (`Aircraft-Registration`) REFERENCES `aircraft` (`Registration-Number`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `path`
---
-ALTER TABLE `path`
-  ADD CONSTRAINT `Flies on relation` FOREIGN KEY (`Flight Number`) REFERENCES `flight` (`Flight Number`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `ticket`
---
-ALTER TABLE `ticket`
-  ADD CONSTRAINT `Buys Relation` FOREIGN KEY (`E-mail`) REFERENCES `user` (`E-mail`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `For Relation` FOREIGN KEY (`Date`,`Flight Number`) REFERENCES `flight` (`Date`, `Flight Number`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- --------------------------------------------------------
