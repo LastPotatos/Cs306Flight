@@ -35,7 +35,7 @@ CREATE TABLE airline (
   codeICAO varchar(3) PRIMARY KEY NOT NULL, -- Airline's 3 letter ICAO code, used for callsign identifiers. (Example: PGT for Pegasus Airlines)
   codeIATA varchar(2) NOT NULL, -- Airline's 2 letter IATA code, used for ticketing and flight numbers. (Example: PC for Pegasus Airlines)
   destinationSize int(11), -- Number of destinations served by the airline. Can be null as it may be unknown.
-  hubAirports varchar(100), -- Comma separated list of the airline's hub airports as airport's ICAO codes (Example: LTFJ,LTAI).
+  hubAirports varchar(100) -- Comma separated list of the airline's hub airports as airport's ICAO codes (Example: LTFJ,LTAI).
 );
 
 -- --------------------------------------------------------
@@ -69,7 +69,7 @@ CREATE TABLE airport (
   city varchar(100) NOT NULL, -- The city the airport is located in (Example: İstanbul)
   country varchar(2) NOT NULL, -- The country the airport is located in as a 2 letter ISO code (Example: TR for Turkey)
   avgAircraftToRunway int(11), -- Average time of taxiing in minutes
-  avgGateToAircraftByBus int(11), -- Average time of passenger bus transfer in minutes
+  avgGateToAircraftByBus int(11) -- Average time of passenger bus transfer in minutes
 );
 
 -- --------------------------------------------------------
@@ -126,7 +126,7 @@ CREATE TABLE ticket (
   class varchar(50), -- The class of the ticket.
   addOns varchar(100), -- Comma seperated list of add-ons purchased with the ticket (Example: BDML,XBAG,SEAT,FLEX for a ticket with a pre-ordered meal, extra baggage and seat selection and flexible add-ons)
   price int(11), -- The price paid for the ticket in real form currency.
-  currency varchar(50) -- The currency of the price paid for the ticket (Example: USD, EUR, TRY).
+  currency varchar(50), -- The currency of the price paid for the ticket (Example: USD, EUR, TRY).
   ticketAirlineICAO varchar(3), -- This is the airline that issued the ticket, not necessarily the airline operating the flight
   pointsUsed int(11), -- The price paid for the ticket in the ticket issuer airline's frequent flier points.
   pointsReceived int(11), -- The ticket issuer airline's frequent flier points received from taking the flight for getting award tickets.
