@@ -62,7 +62,7 @@ CREATE TABLE aircraft (
 CREATE TABLE airport (
   latitude float(11) NOT NULL, -- Airport's latitude coordinate
   longitude float(11) NOT NULL, -- Airport's longitude coordinate
-  codeICAO varchar(4) NOT NULL, -- Airport's 4 letter code, used for planning in flight computers. (Example: LTAF for Adana Şakirpaşa Airport)
+  codeICAO varchar(4) PRIMARY KEY NOT NULL, -- Airport's 4 letter code, used for planning in flight computers. (Example: LTAF for Adana Şakirpaşa Airport)
   codeIATA varchar(3), -- Airport's 3 letter code found on tickets and baggage tags. (Example: UAB for Adana İncirlik Air Base)
   runways varchar(100) NOT NULL, -- Comma seperated list of runway numbers (Example: 36,35L,35R,34L,34R,18,17L,17R,16L,16R for Istanbul Airport)
   pname varchar(100) NOT NULL, -- Airport's name (Example: İstanbul Sabiha Gökçen)
