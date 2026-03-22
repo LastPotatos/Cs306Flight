@@ -50,7 +50,7 @@ CREATE TABLE aircraft (
   model varchar(50), -- Aircraft's model (Example: B738 for Boeing 737-800)
   seatConfig text, -- Comma seperated list of the number of seats seperated by aisle for each row for each class. (Example: 3-3,2-2)
   capacity int(11) NOT NULL, -- Total number of seats on the aircraft.
-  CONSTRAINT airlineOwnsAircraft FOREIGN KEY (airlineICAO) REFERENCES airline (codeICAO) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT airlineOwnsAircraft FOREIGN KEY (airlineICAO) REFERENCES airline (codeICAO) ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -90,8 +90,10 @@ CREATE TABLE flight (
   actualDeparture datetime NOT NULL, -- Actual departure time according to the user/flight path.
   actualArrival datetime NOT NULL, -- Actual arrival time according to the user/flight path.
   PRIMARY KEY (flightNumber, scheduledDeparture),
+  CONSTRAINT flightFliesFrom FOREIGN KEY (departedAirport) REFERENCES airport (codeICAO),
+  CONSTRAINT flightFliesTo FOREIGN KEY (arrivedAirport) REFERENCES airport (codeICAO),
   CONSTRAINT userLogsFlight FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT flightUsesAircraft FOREIGN KEY (aircraftRegistration) REFERENCES aircraft (registration) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT flightUsesAircraft FOREIGN KEY (aircraftRegistration) REFERENCES aircraft (registration) ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -109,7 +111,7 @@ CREATE TABLE path (
   altitude int(11) NOT NULL, -- The altitude of the aircraft at this path point in feet.
   heading float(11) NOT NULL, -- The heading of the aircraft at this path point in degrees.
   PRIMARY KEY (flightNumber,epochTimestamp),
-  CONSTRAINT flightFliesOn FOREIGN KEY (flightNumber) REFERENCES flight (flightNumber) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT flightFliesOn FOREIGN KEY (flightNumber) REFERENCES flight (flightNumber) ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -133,7 +135,7 @@ CREATE TABLE ticket (
   pointsReceivedXP int(11), -- The ticket issuer airline's frequent flier experience received from taking the flight for upgrading in the program.
   PRIMARY KEY (flightNumber,scheduledDeparture),
   CONSTRAINT userBuysTicket FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT ticketIsForFlight FOREIGN KEY (flightNumber,scheduledDeparture) REFERENCES flight (flightNumber, scheduledDeparture) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT ticketIsForFlight FOREIGN KEY (flightNumber,scheduledDeparture) REFERENCES flight (flightNumber, scheduledDeparture) ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
