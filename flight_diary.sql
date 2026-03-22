@@ -83,14 +83,13 @@ CREATE TABLE flight (
   aircraftRegistration varchar(8) NOT NULL, -- Aircraft's registration number of this flight, found on the tail of the aircraft. (Example: TC-JDM)
   departedAirport varchar(6) NOT NULL, -- ICAO code of the airport where the flight departed.
   arrivedAirport varchar(6) NOT NULL, -- ICAO code of the airport where the flight arrived.
-  flightDate datetime NOT NULL, -- Date of the flight.
   flightNumber varchar(6) NOT NULL, -- The number found on the ticket.
   scheduledDeparture datetime NOT NULL, -- Scheduled departure time according to the airline.
   scheduledArrival datetime NOT NULL, -- Scheduled arrival time according to the airline.
   comments text, -- User's comments about the flight, can include any details.
   actualDeparture datetime NOT NULL, -- Actual departure time according to the user/flight path.
   actualArrival datetime NOT NULL, -- Actual arrival time according to the user/flight path.
-  PRIMARY KEY (flightNumber, flightDate),
+  PRIMARY KEY (flightNumber, scheduledDeparture),
   CONSTRAINT userLogsFlight FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT flightUsesAircraft FOREIGN KEY (aircraftRegistration) REFERENCES aircraft (registration) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -122,7 +121,7 @@ CREATE TABLE path (
 CREATE TABLE ticket (
   email varchar(50) NOT NULL, -- Email of the user who purchased the ticket.
   flightNumber varchar(6) NOT NULL, -- The flight number this ticket is for.
-  flightDate datetime NOT NULL, -- Date of the flight.
+  scheduledDeparture datetime NOT NULL, -- Date of the flight.
   seat varchar(3), -- The seat number assigned to the user.
   class varchar(50), -- The class of the ticket.
   addOns varchar(100), -- Comma seperated list of add-ons purchased with the ticket (Example: BDML,XBAG,SEAT,FLEX for a ticket with a pre-ordered meal, extra baggage and seat selection and flexible add-ons)
@@ -132,9 +131,9 @@ CREATE TABLE ticket (
   pointsUsed int(11), -- The price paid for the ticket in the ticket issuer airline's frequent flier points.
   pointsReceived int(11), -- The ticket issuer airline's frequent flier points received from taking the flight for getting award tickets.
   pointsReceivedXP int(11), -- The ticket issuer airline's frequent flier experience received from taking the flight for upgrading in the program.
-  PRIMARY KEY (flightNumber,flightDate),
+  PRIMARY KEY (flightNumber,scheduledDeparture),
   CONSTRAINT userBuysTicket FOREIGN KEY (email) REFERENCES user (email) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT ticketIsForFlight FOREIGN KEY (flightNumber,flightDate) REFERENCES flight (flightNumber, flightDate) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT ticketIsForFlight FOREIGN KEY (flightNumber,scheduledDeparture) REFERENCES flight (flightNumber, scheduledDeparture) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- --------------------------------------------------------
