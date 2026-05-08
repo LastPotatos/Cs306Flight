@@ -61,23 +61,37 @@ $departures = $stmtDep->fetchAll(PDO::FETCH_ASSOC);
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <style>
+
         body { font-family: Arial; margin: 0; }
         #map { height: 90vh; }
 
         .switch {
-            padding: 10px;
-            background: #f5f5f5;
+        padding: 10px;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        gap: 15px;
         }
 
-        .switch label {
-            margin-right: 15px;
-            font-weight: bold;
+        .switch a {
+            text-decoration: none;
+            background: white;
+            border: 1px solid #999;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: black;
+            font-family: Arial;
+        }
+
+        .switch a:hover {
+            background: #eaeaea;
         }
     </style>
 </head>
 <body>
 
 <div class="switch">
+    <a href="home.php">← Back</a>
     <label>
         <input type="radio" name="mode" value="landed" checked>
         🟦 Landed Airports
