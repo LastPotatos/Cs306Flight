@@ -71,9 +71,11 @@ try {
         SELECT latitude, longitude, altitude, speed, heading, epochTimestamp
         FROM path
         WHERE flightNumber = ?
+          AND epochTimestamp >= ?
+          AND epochTimestamp <= ?
         ORDER BY epochTimestamp ASC
     ");
-    $pathStmt->execute([$flightNumber]);
+    $pathStmt->execute([$flightNumber, $scheduledDeparture, $flight['scheduledArrival']]);
     $pathPoints = $pathStmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
