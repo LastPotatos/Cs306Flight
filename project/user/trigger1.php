@@ -62,16 +62,24 @@ if (isset($_POST['case2'])) {
     ");
     $stmt->bind_param('sssss', $testFlightNo, $dep, $arr, $dep, $arr);
 
-    if ($stmt->execute()) {
-        // Should NOT reach here
-        $success = false;
-        $result  = "⚠️ Trigger did NOT fire – the invalid row was inserted (unexpected).";
-        $conn->query("DELETE FROM flight WHERE flightNumber = '$testFlightNo'");
-    } else {
+    try {    
+        if ($stmt->execute()) {
+            // Should NOT reach here
+            $success = false;
+            $result  = "⚠️ Trigger did NOT fire – the invalid row was inserted (unexpected).";
+            $conn->query("DELETE FROM flight WHERE flightNumber = '$testFlightNo'");
+        } else {
+            $success = true; // trigger correctly blocked the insert
+            $result  = "✅ Case 2 SUCCESS – Trigger correctly BLOCKED the INSERT.<br>"
+                    . "Departure: <code>$dep</code> → Arrival: <code>$arr</code><br>"
+                    . "MySQL error: <em>" . htmlspecialchars($stmt->error) . "</em>";
+        }
+    }
+    catch (mysqli_sql_exception $e) {
         $success = true; // trigger correctly blocked the insert
         $result  = "✅ Case 2 SUCCESS – Trigger correctly BLOCKED the INSERT.<br>"
-                 . "Departure: <code>$dep</code> → Arrival: <code>$arr</code><br>"
-                 . "MySQL error: <em>" . htmlspecialchars($stmt->error) . "</em>";
+                . "Departure: <code>$dep</code> → Arrival: <code>$arr</code><br>"
+                . "MySQL error: <em>" . htmlspecialchars($e->getMessage()) . "</em>";
     }
     $stmt->close();
 }
