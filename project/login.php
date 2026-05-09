@@ -60,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <button type="submit">Login</button>
 
 </form>
+<li><a href="registration.php">Register Now!</a></li>
 
 <p style="color:red;">
     <?php echo $error; ?>
