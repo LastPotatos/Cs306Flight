@@ -63,7 +63,7 @@ $departures = $stmtDep->fetchAll(PDO::FETCH_ASSOC);
     <style>
 
         body { font-family: Arial; margin: 0; }
-        #map { height: 90vh; }
+        #map { height: calc(100vh - 48px); }
 
         .switch {
         padding: 10px;
@@ -93,13 +93,13 @@ $departures = $stmtDep->fetchAll(PDO::FETCH_ASSOC);
 <div class="switch">
     <a href="home.php">← Back</a>
     <label>
-        <input type="radio" name="mode" value="landed" checked>
-        🟦 Landed Airports
+        🟦 Airports arrived at
     </label>
-
     <label>
-        <input type="radio" name="mode" value="takeoff">
-        🟥 Takeoff Airports
+        🟥 Airports departed from
+    </label>
+    <label>
+        🟩 Airports both arrived at and departed from
     </label>
 </div>
 
@@ -115,6 +115,25 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // DATA FROM PHP
 var arrivals = <?php echo json_encode($arrivals); ?>;
 var departures = <?php echo json_encode($departures); ?>;
+var allAirports = [];
+arrivals.forEach(a => {
+    a.color = "blue";
+    allAirports.push(a);
+});
+departures.forEach(a => {
+    let found = false;
+    allAirports = allAirports.map(ap => {
+        if (ap.codeICAO === a.codeICAO) {
+            found = true;
+            ap.color = "green";
+        }
+        return ap;
+    });
+    if (!found) {
+        a.color = "red";
+        allAirports.push(a);
+    }
+});
 
 let layer = L.layerGroup().addTo(map);
 
@@ -135,8 +154,8 @@ function showAirports(data, color) {
 
         L.circleMarker([a.latitude, a.longitude], {
             radius: 6,
-            color: color,
-            fillColor: color,
+            color: a.color,
+            fillColor: a.color,
             fillOpacity: 0.8
         })
         .addTo(layer)
@@ -144,19 +163,8 @@ function showAirports(data, color) {
     });
 }
 
-// default = landed
-showAirports(arrivals, "blue");
+showAirports(allAirports);
 
-// switch handler
-document.querySelectorAll('input[name="mode"]').forEach(el => {
-    el.addEventListener('change', function () {
-        if (this.value === "landed") {
-            showAirports(arrivals, "blue");
-        } else {
-            showAirports(departures, "red");
-        }
-    });
-});
 </script>
 
 </body>

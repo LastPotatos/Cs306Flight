@@ -71,9 +71,11 @@ try {
         SELECT latitude, longitude, altitude, speed, heading, epochTimestamp
         FROM path
         WHERE flightNumber = ?
+          AND epochTimestamp >= ?
+          AND epochTimestamp <= ?
         ORDER BY epochTimestamp ASC
     ");
-    $pathStmt->execute([$flightNumber]);
+    $pathStmt->execute([$flightNumber, $scheduledDeparture, $flight['actualArrival']]);
     $pathPoints = $pathStmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
@@ -116,7 +118,7 @@ $pathJson = json_encode($pathPoints);
         .info-item span:first-child { font-size: 11px; color: #888; text-transform: uppercase; }
         .info-item span:last-child  { font-weight: bold; }
 
-        #map { width: 100%; height: calc(100vh - 130px); }
+        #map { width: 100%; height: calc(100vh - 112px); }
 
         .no-path {
             text-align: center; padding: 60px; font-size: 16px; color: #666;
@@ -197,14 +199,14 @@ $pathJson = json_encode($pathPoints);
 
         // Departure marker (green)
         L.circleMarker([depLat, depLng], {
-            radius: 8, color: '#2a9d2a', fillColor: '#2a9d2a', fillOpacity: 1
+            radius: 8, color: 'red', fillColor: 'red', fillOpacity: 0.6
         })
         .addTo(map)
         .bindPopup(`<b>Departure</b><br><?php echo htmlspecialchars($flight['depName']); ?> (<?php echo htmlspecialchars($flight['depIATA']); ?>)<br><?php echo htmlspecialchars($flight['scheduledDeparture']); ?>`);
 
         // Arrival marker (red)
         L.circleMarker([arrLat, arrLng], {
-            radius: 8, color: '#c0392b', fillColor: '#c0392b', fillOpacity: 1
+            radius: 8, color: 'blue', fillColor: 'blue', fillOpacity: 0.6
         })
         .addTo(map)
         .bindPopup(`<b>Arrival</b><br><?php echo htmlspecialchars($flight['arrName']); ?> (<?php echo htmlspecialchars($flight['arrIATA']); ?>)<br><?php echo htmlspecialchars($flight['scheduledArrival']); ?>`);
