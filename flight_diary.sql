@@ -30417,3 +30417,77 @@ INSERT INTO `path` (`flightNumber`, `epochTimestamp`, `speed`, `latitude`, `long
 ('VF3307', '2024-04-14 16:47:23', 0, 40.9076, 29.3226, 0, 334);
 
 
+DELIMITER $$
+
+CREATE TRIGGER trg_validate_flight_times
+BEFORE INSERT ON flight
+FOR EACH ROW
+BEGIN
+    IF NEW.scheduledArrival <= NEW.scheduledDeparture THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'ERROR: scheduledArrival must be after scheduledDeparture.';
+    END IF;
+
+    IF NEW.actualArrival <= NEW.actualDeparture THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'ERROR: actualArrival must be after actualDeparture.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_airline_uppercase
+BEFORE INSERT ON airline
+FOR EACH ROW
+BEGIN
+    SET NEW.codeICAO = UPPER(NEW.codeICAO);
+    SET NEW.codeIATA = UPPER(NEW.codeIATA);
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE GetUserFlightStats(IN p_username VARCHAR(50))
+BEGIN
+    SELECT
+        COUNT(*)                     AS total_flights,
+        COALESCE(SUM(t.price), 0)   AS total_spent,
+        ROUND(AVG(t.price), 2)      AS avg_price,
+        (
+            SELECT t2.class
+            FROM   ticket t2
+            JOIN   user   u2 ON u2.email = t2.email
+            WHERE  u2.username = p_username
+              AND  t2.class IS NOT NULL
+            GROUP  BY t2.class
+            ORDER  BY COUNT(*) DESC
+            LIMIT  1
+        )                            AS most_used_class
+    FROM  ticket t
+    JOIN  user   u ON u.email = t.email
+    WHERE u.username = p_username;
+END$$
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS GetAirlineStats //
+ 
+CREATE PROCEDURE GetAirlineStats(IN p_icao VARCHAR(3))
+BEGIN
+    SELECT
+        a.aname                                                          AS airline_name,
+        COUNT(DISTINCT f.flightNumber)                                   AS total_flights,
+        COUNT(DISTINCT f.arrivedAirport)                                 AS destinations_served,
+        ROUND(AVG(TIMESTAMPDIFF(MINUTE,
+              f.scheduledDeparture, f.actualDeparture)), 1)              AS avg_departure_delay_min,
+        ROUND(AVG(TIMESTAMPDIFF(MINUTE,
+              f.scheduledArrival,   f.actualArrival)),   1)              AS avg_arrival_delay_min
+    FROM  flight   f
+    JOIN  aircraft ac ON ac.registration  = f.aircraftRegistration
+    JOIN  airline  a  ON a.codeICAO       = ac.airlineICAO
+    WHERE ac.airlineICAO = UPPER(p_icao);
+END //
+ 

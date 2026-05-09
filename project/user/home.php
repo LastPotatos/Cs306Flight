@@ -27,6 +27,11 @@ if (!isset($_SESSION['username'])) {
     <li><a href="insert.php">Insert Flight</a></li>
     <li><a href="support_tickets.php">Ask for help</a></li>
     <li><a href="logout.php">Logout</a></li>
+    <a> - </a>
+    <li><a href="trigger1.php">Demo trigger 1</a></li>
+    <li><a href="trigger2.php">Demo trigger 2</a></li>
+    <li><a href="procedure1.php">Demo procedure 1</a></li>
+    <li><a href="procedure2.php">Demo procedure 2</a></li>
 </ul>
 
 <hr>
