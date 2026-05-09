@@ -16,7 +16,7 @@ $client = new MongoDB\Client(
 );
 
 $collection = $client->support_system->tickets;
-
+$users = $collection->distinct("email");
 /* =========================
    CLOSE TICKET
 ========================= */
@@ -54,6 +54,19 @@ if (isset($_GET['delete'])) {
 $tickets = $collection->find([], [
     "sort" => ["created_at" => -1]
 ]);
+
+$selectedUser = $_GET['user'] ?? null;
+
+if ($selectedUser) {
+    $tickets = $collection->find(
+        ["email" => $selectedUser],
+        ["sort" => ["created_at" => -1]]
+    );
+} else {
+    $tickets = $collection->find([], [
+        "sort" => ["created_at" => -1]
+    ]);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -117,7 +130,24 @@ $tickets = $collection->find([], [
 <div class="container">
 
 <h2>All Support Tickets</h2>
+<form method="GET" style="margin-bottom:20px;">
 
+    <label>Filter by user:</label>
+
+    <select name="user" onchange="this.form.submit()">
+
+        <option value="">-- All Users --</option>
+
+        <?php foreach ($users as $u): ?>
+            <option value="<?= htmlspecialchars($u) ?>"
+                <?= ($selectedUser == $u) ? 'selected' : '' ?>>
+                <?= htmlspecialchars($u) ?>
+            </option>
+        <?php endforeach; ?>
+
+    </select>
+
+</form>
 <?php foreach ($tickets as $t): ?>
 
     <div class="ticket">
