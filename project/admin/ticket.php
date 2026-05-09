@@ -1,9 +1,20 @@
 <?php
+session_start();
+
 require __DIR__ . '/../vendor/autoload.php';
+
+/* =========================
+   SIMPLE ADMIN PROTECTION
+========================= */
+if (!isset($_SESSION["isAdmin"]) || $_SESSION["isAdmin"] != 1) {
+    header("Location: home.php");
+    exit();
+}
 
 $client = new MongoDB\Client(
     "mongodb+srv://admin:admin@cluster.3dm8sxf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
 );
+
 $collection = $client->support_system->tickets;
 
 /* =========================
@@ -22,12 +33,11 @@ if (isset($_GET['close'])) {
 }
 
 /* =========================
-   DELETE TICKET (ONLY CLOSED)
+   DELETE TICKET
 ========================= */
 if (isset($_GET['delete'])) {
     $id = new MongoDB\BSON\ObjectId($_GET['delete']);
 
-    // safety check: only delete closed tickets
     $ticket = $collection->findOne(["_id" => $id]);
 
     if ($ticket && $ticket["status"] === "closed") {
@@ -45,13 +55,8 @@ $tickets = $collection->find([], [
     "sort" => ["created_at" => -1]
 ]);
 ?>
-
 <!DOCTYPE html>
 <html>
-    <br>
-        <a href="home.php">
-    <button type="button">⬅ Go Back to Home</button>
-</a>
 <head>
     <title>Admin - View Tickets</title>
     <style>
@@ -97,66 +102,89 @@ $tickets = $collection->find([], [
             background: red;
             color: white;
         }
-        .open {
-            color: green;
-            font-weight: bold;
+        .delete-btn {
+            background: black;
+            color: white;
         }
-        .closed {
-            color: gray;
-            font-weight: bold;
-        }
+        .open { color: green; font-weight: bold; }
+        .closed { color: gray; font-weight: bold; }
+        .comment-box { background:#eee; padding:5px; margin-top:5px; border-radius:5px; }
     </style>
 </head>
 
 <body>
-
+<a href="home.php">Return Home</a>
 <div class="container">
 
-    <h2>All Support Tickets</h2>
+<h2>All Support Tickets</h2>
 
-    <?php foreach ($tickets as $t): ?>
-        <div class="ticket">
+<?php foreach ($tickets as $t): ?>
 
-            <div class="title">
-                <?= htmlspecialchars($t["title"]) ?>
-            </div>
+    <div class="ticket">
 
-            <div class="message">
-                <?= htmlspecialchars($t["message"]) ?>
-            </div>
+        <div class="title">
+            <?= htmlspecialchars($t["title"]) ?>
+        </div>
 
-            <div class="meta">
-                📧 User: <?= htmlspecialchars($t["email"] ?? "unknown") ?> <br>
-                🆔 ID: <?= $t["_id"] ?> <br>
-                Status:
-                <?php if ($t["status"] == "open"): ?>
-                    <span class="open">OPEN</span>
-                <?php else: ?>
-                    <span class="closed">CLOSED</span>
-                <?php endif; ?>
-            </div>
+        <div class="message">
+            <?= htmlspecialchars($t["message"]) ?>
+        </div>
 
-            <div class="actions">
+        <div class="meta">
+            📧 User: <?= htmlspecialchars($t["email"] ?? "unknown") ?><br>
+            🆔 ID: <?= (string)$t["_id"] ?><br>
 
-                <?php if ($t["status"] == "open"): ?>
-                    <a class="btn close-btn"
-                    href="?close=<?= $t["_id"] ?>"
-                    onclick="return confirm('Close this ticket?')">
-                    Close Ticket
-                    </a>
+            Status:
+            <?php if ($t["status"] == "open"): ?>
+                <span class="open">OPEN</span>
+            <?php else: ?>
+                <span class="closed">CLOSED</span>
+            <?php endif; ?>
+        </div>
 
-                <?php elseif ($t["status"] == "closed"): ?>
-                    <a class="btn close-btn"
-                    href="?delete=<?= $t["_id"] ?>"
-                    onclick="return confirm('Delete this closed ticket permanently?')">
-                    Delete Ticket
-                    </a>
-                <?php endif; ?>
+        <!-- COMMENTS (ADMIN VIEW) -->
+        <div>
+            <b>Comments:</b><br>
 
-            </div>
+            <?php if (!empty($t["comments"])): ?>
+                <?php foreach ($t["comments"] as $c): ?>
+                    <div class="comment-box">
+                        <?= htmlspecialchars($c["text"]) ?><br>
+                        <small>by <?= htmlspecialchars($c["by"]) ?></small>
+                    </div>
+                <?php endforeach; ?>
+                <form method="POST" action="admin_reply.php">
+                    <input type="hidden" name="ticket_id" value="<?= $t["_id"] ?>">
+                    <input type="text" name="comment" placeholder="Admin reply..." required>
+                    <button type="submit">Reply as Admin</button>
+                </form>
+            <?php else: ?>
+                <i>No comments</i>
+            <?php endif; ?>
+        </div>
+
+        <div class="actions">
+
+            <?php if ($t["status"] == "open"): ?>
+                <a class="btn close-btn"
+                   href="?close=<?= $t["_id"] ?>"
+                   onclick="return confirm('Close this ticket?')">
+                   Close
+                </a>
+
+            <?php elseif ($t["status"] == "closed"): ?>
+                <a class="btn delete-btn"
+                   href="?delete=<?= $t["_id"] ?>"
+                   onclick="return confirm('Delete permanently?')">
+                   Delete
+                </a>
+            <?php endif; ?>
 
         </div>
-    <?php endforeach; ?>
+
+    </div>
+
+<?php endforeach; ?>
 
 </div>
 
