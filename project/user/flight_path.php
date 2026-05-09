@@ -186,16 +186,44 @@ $pathJson = json_encode($pathPoints);
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        const alts = pathData.map(p => parseFloat(p.altitude)).filter(a => !isNaN(a));
+        const minAlt = alts.length ? Math.min(...alts) : 0;
+        const maxAlt = alts.length ? Math.max(...alts) : minAlt;
+
+        function altitudeToColor(alt) {
+            if (isNaN(alt)) return '#888'; // fallback
+            const ratio = maxAlt === minAlt ? 0.5 : (alt - minAlt) / (maxAlt - minAlt);
+            // hue from 120 (green) → 60 (yellow) → 0 (red)
+            const hue = 120 - (ratio * 120);
+            return `hsl(${hue}, 90%, 40%)`;
+        }
+
         // Draw the path polyline
+
+        const lineLayer = L.layerGroup().addTo(map);
+        for (let i = 0; i < pathData.length - 1; i++) {
+            const p1 = pathData[i];
+            const p2 = pathData[i + 1];
+            const lat1 = parseFloat(p1.latitude), lng1 = parseFloat(p1.longitude);
+            const lat2 = parseFloat(p2.latitude), lng2 = parseFloat(p2.longitude);
+            if (isNaN(lat1) || isNaN(lng1) || isNaN(lat2) || isNaN(lng2)) continue;
+            const alt1 = parseFloat(p1.altitude);
+            const alt2 = parseFloat(p2.altitude);
+            const avgAlt = (isNaN(alt1) ? 0 : alt1) + (isNaN(alt2) ? 0 : alt2);
+            const count = (isNaN(alt1) ? 0 : 1) + (isNaN(alt2) ? 0 : 1);
+            const avg = count ? (avgAlt / count) : NaN;
+            const color = altitudeToColor(avg);
+            L.polyline([[lat1, lng1], [lat2, lng2]], {
+                color: color,
+                weight: 3,
+                opacity: 0.85,
+                interactive: false
+            }).addTo(lineLayer);
+        }
+
         const latlngs = pathData.map(p => [parseFloat(p.latitude), parseFloat(p.longitude)]);
 
-        const polyline = L.polyline(latlngs, {
-            color: '#0057b7',
-            weight: 3,
-            opacity: 0.85
-        }).addTo(map);
-
-        map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+        map.fitBounds(L.latLngBounds(latlngs), { padding: [40, 40] });
 
         // Departure marker (green)
         L.circleMarker([depLat, depLng], {
@@ -213,8 +241,10 @@ $pathJson = json_encode($pathPoints);
 
         // Clickable path points showing altitude, speed, heading
         pathData.forEach(p => {
+            const alt = parseFloat(p.altitude);
+            const color = altitudeToColor(alt);
             L.circleMarker([parseFloat(p.latitude), parseFloat(p.longitude)], {
-                radius: 3, color: '#0057b7', fillColor: '#fff', fillOpacity: 0.8, weight: 1.5
+                radius: 3, color: color, fillColor: '#fff', fillOpacity: 0.8, weight: 1.5
             })
             .addTo(map)
             .bindPopup(
