@@ -80,11 +80,8 @@ try {
     </style>
 </head>
 <body>
-
-<h1>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h1>
-<p>You are logged in.<a href="airport.php">View Airports Map</a></p>
-
 <h2>My Flights</h2>
+<p><a href="home.php">To home</a></p>
 
 <?php if (!empty($error)): ?>
     <p class="error"><?php echo htmlspecialchars($error); ?></p>

@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -22,15 +21,13 @@ if (!isset($_SESSION['username'])) {
 <h2>Navigation</h2>
 
 <ul>
-    <li><a href="airport.php">View Airports</a></li>
-    <li><a href="tickets.php">View Tickets</a></li>
-    <li><a href="insert.php">Insert Flight</a></li>
-    <li><a href="procedure1.php">Stored Procedures</a></li>
-    <li><a href="trigger1.php">Trigger Demo</a></li>
+    <li><a href="ticket.php">View tickets</a></li>
+    <li><a href="airport.php">Add new airport</a></li>
+    <li><a href="users.php">See users</a></li>
+    <li><a href="support_tickets.php">Ask for help</a></li>
     <li><a href="logout.php">Logout</a></li>
 </ul>
 
 <hr>
 </body>
 </html>
-

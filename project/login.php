@@ -23,8 +23,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $_SESSION['username'] = $row['username'];
         $_SESSION['email'] = $row['email'];
+        $_SESSION['isAdmin'] = $row['isAdmin'];
 
-        header("Location: home.php");
+        // 🔥 ROLE-BASED REDIRECT
+        if ($row['isAdmin'] == 1) {
+            header("Location: admin/home.php");
+        } else {
+            header("Location: user/home.php");
+        }
+
         exit();
 
     } else {

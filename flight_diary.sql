@@ -27,7 +27,8 @@ USE `flightdiary306`;
 CREATE TABLE user (
   username varchar(50) NOT NULL, -- User's name
   email varchar(100) PRIMARY KEY NOT NULL, -- User's email address as identifier.
-  passwd varchar(256) NOT NULL -- User's salted password
+  passwd varchar(256) NOT NULL, -- User's salted password
+  isAdmin int(10) NOT NULL -- 0 if normal 1 if admin
 );
 
 
@@ -150,12 +151,13 @@ CREATE TABLE path (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`username`, `email`, `passwd`) VALUES
-('Dad', 'dad@email.com', 'random'),
-('Grandma', 'grandma@email.com', 'random'),
-('Me', 'me@email.com', 'random'),
-('Mom', 'mom@email.com', 'random'),
-('Sibling', 'sibling@email.com', 'random');
+INSERT INTO `user` (`username`, `email`, `passwd` , `isAdmin`) VALUES
+('Dad', 'dad@email.com', 'random' , "0"),
+('Grandma', 'grandma@email.com', 'random' , "0"),
+('Me', 'me@email.com', 'random' , "0"),
+('Mom', 'mom@email.com', 'random' , "0"),
+('Sibling', 'sibling@email.com', 'random' , "0"),
+("admin" , "admin@email.com" , "admin" , "1");
 
 -- --------------------------------------------------------
 

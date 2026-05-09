@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <h1>Insert Flight</h1>
 
-<a href="index.php">Return Home</a>
+<a href="home.php">Return Home</a>
 
 <hr>
 

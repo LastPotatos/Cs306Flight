@@ -126,7 +126,7 @@ $pathJson = json_encode($pathPoints);
 <body>
 
 <header>
-    <a href="index.php">&larr; Back to My Flights</a>
+    <a href="tickets.php">&larr; Back to My Flights</a>
     <h1>
         Flight <?php echo htmlspecialchars($flightNumber); ?> &nbsp;&mdash;&nbsp;
         <?php echo htmlspecialchars($flight['depIATA'] . ' (' . $flight['depCity'] . ')'); ?>
