@@ -8,7 +8,7 @@ if (!isset($_SESSION["email"])) {
 }
 
 $client = new MongoDB\Client(
-    "mongodb+srv://admin:admin@cluster.3dm8sxf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
+    "mongodb://localhost:27017"
 );
 
 $collection = $client->support_system->tickets;
