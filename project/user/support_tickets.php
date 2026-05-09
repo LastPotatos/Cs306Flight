@@ -2,7 +2,9 @@
 session_start();
 require __DIR__ . '/../vendor/autoload.php';
 
-$client = new MongoDB\Client("mongodb://localhost:27017");
+$client = new MongoDB\Client(
+    "mongodb+srv://admin:admin@cluster.3dm8sxf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"
+);
 $collection = $client->support_system->tickets;
 
 // Handle form submit
