@@ -204,6 +204,7 @@ INSERT INTO `airport` (`latitude`, `longitude`, `codeICAO`, `codeIATA`, `runways
 (40.8276, 35.5041, 'LTAP', 'MZH', '05L,05R,23L,23R', 'Amasya Merzifon', 'Amasya', 'TR', NULL, NULL),
 (40.9783, 28.8167, 'LTBA', 'ISL', '05,23,36L,36R,18L,18R', 'İstanbul Atatürk', 'İstanbul', 'TR', NULL, NULL),
 (38.2936, 27.1503, 'LTBJ', 'ADB', '16L,16R,34L,34R', 'İzmir Adnan Menderes', 'İzmir', 'TR', NULL, NULL),
+(36.944006, 37.477730, 'LTAJ', 'GZT', '10,28', 'Gaziantep', 'Gaziantep', 'TR', NULL, NULL),
 (36.3631, 36.2826, 'LTDA', 'HTY', '04,22', 'Hatay Antakya', 'Hatay', 'TR', NULL, NULL),
 (36.9013, 35.0698, 'LTDB', 'COV', '03L,03R,21L,21R', 'Mersin Çukurova', 'Mersin', 'TR', NULL, NULL),
 (41.2579, 36.5557, 'LTFH', 'SZF', '13,31', 'Samsun Çarşamba', 'Samsun', 'TR', NULL, NULL),
@@ -288,6 +289,10 @@ INSERT INTO `aircraft` (`registration`, `airlineICAO`, `model`, `seatConfig`, `c
 ('TC-RDK', 'PGT', 'A21N', '3-3', 230),
 ('TC-RDL', 'PGT', 'A21N', '3-3', 230),
 ('TC-RDO', 'PGT', 'A21N', '3-3', 230),
+('TC-RDM', 'PGT', 'A21N', '3-3', 230),
+('TC-RDC', 'PGT', 'A21N', '3-3', 230),
+('TC-RBP', 'PGT', 'A21N', '3-3', 230),
+('TC-RDP', 'PGT', 'A21N', '3-3', 230),
 ('YL-LDQ', 'TKJ', 'A321', '3-3', 215);
 
 -- --------------------------------------------------------
@@ -297,6 +302,10 @@ INSERT INTO `aircraft` (`registration`, `airlineICAO`, `model`, `seatConfig`, `c
 --
 
 INSERT INTO `flight` (`aircraftRegistration`, `departedAirport`, `arrivedAirport`, `flightNumber`, `scheduledDeparture`, `scheduledArrival`, `actualDeparture`, `actualArrival`) VALUES
+('TC-RDM', 'LTFJ', 'LTAJ', 'PC2404', '2026-04-24 06:10:00', '2026-04-24 07:45:00', '2026-04-24 06:10:00', '2026-04-24 07:45:00'),
+('TC-RDC', 'LTDA', 'LTFJ', 'PC2137', '2026-04-26 19:25:00', '2026-04-26 21:10:00', '2026-04-26 19:25:00', '2026-04-26 21:10:00'),
+('TC-RBP', 'LTFJ', 'EKCH', 'PC1073', '2026-04-30 09:35:00', '2026-04-30 11:55:00', '2026-04-30 09:35:00', '2026-04-30 11:55:00'),
+('TC-RDP', 'EKCH', 'LTFJ', 'PC1074', '2026-05-03 13:20:00', '2026-05-03 17:30:00', '2026-05-03 13:20:00', '2026-05-03 17:30:00'),
 ('SE-RTF', 'ESSA', 'EFHK', 'D82603', '2025-01-23 07:25:00', '2025-01-23 08:20:00', '2025-01-23 07:37:21', '2025-01-23 08:17:44'),
 (NULL, 'LTFJ', 'EDDM', 'PC1021', '2016-05-18 09:25:00', '2016-05-18 11:10:00', '2016-05-18 09:25:00', '2016-05-18 11:10:00'),
 ('TC-RDO', 'LTFJ', 'EKCH', 'PC1071', '2026-01-15 06:05:00', '2026-01-15 09:25:00', '2026-01-15 06:05:00', '2026-01-15 09:25:00'),
@@ -397,6 +406,10 @@ INSERT INTO `flight` (`aircraftRegistration`, `departedAirport`, `arrivedAirport
 --
 
 INSERT INTO `ticket` (`email`, `flightNumber`, `scheduledDeparture`, `seat`, `class`, `addOns`, `price`, `currency`, `ticketAirlineICAO`, `pointsUsed`, `pointsReceived`, `pointsReceivedXP`, `comments`, `purpose`) VALUES
+('me@email.com', 'PC1074', '2026-05-03 13:20:00', '32D', 'Standard', 'SEAT,FLEX,MEAL', 8524.9, 'TRY', 'PGT', 0, 5589.4, 0, NULL, 'Tourism'),
+('me@email.com', 'PC1073', '2026-04-30 09:35:00', '32F', 'Standard', 'FLEX,MEAL', 8025.9, 'TRY', 'PGT', 0, 4686, 0, NULL, 'Tourism'),
+('me@email.com', 'PC2137', '2026-04-26 19:25:00', '8F', 'Standard', 'SEAT,FLEX,XBAG', 3599.94, 'TRY', 'PGT', 0, 2799.97, 0, NULL, 'Family Visit'),
+('me@email.com', 'PC2404', '2026-04-24 06:10:00', '22F', 'Standard', 'SEAT,FLEX,XBAG', 5534, 'TRY', 'PGT', 0, 3767, 0, NULL, 'Family Visit'),
 ('dad@email.com', 'PC1021', '2016-05-18 09:25:00', '', 'Standard', '', NULL, 'TRY', 'PGT', 0, 0, 0, NULL, 'Tourism'),
 ('dad@email.com', 'PC1853', '2023-08-05 11:20:00', '', 'Standard', '', 600, 'TRY', 'PGT', 0, 0, 0, NULL, 'Tourism'),
 ('dad@email.com', 'PC1854', '2023-08-02 12:40:00', '', 'Standard', '', 600, 'TRY', 'PGT', 0, 0, 0, NULL, 'Tourism'),
