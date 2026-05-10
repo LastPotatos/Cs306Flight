@@ -126,7 +126,7 @@ if ($selectedUser) {
 </head>
 
 <body>
-<a href="home.php">Return Home</a>
+<a href="home.php"><- Back</a>
 <div class="container">
 
 <h2>All Support Tickets</h2>
