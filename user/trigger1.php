@@ -1,9 +1,9 @@
 <?php
 session_start();
-include '../db.php'; // mysqli connection → $conn
+include 'db.php'; // mysqli connection → $conn
 
 if (!isset($_SESSION['username'])) {
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit();
 }
 
