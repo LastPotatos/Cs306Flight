@@ -22,9 +22,6 @@ if (!isset($_SESSION['username'])) {
 
 <ul>
     <li><a href="ticket.php">View tickets</a></li>
-    <li><a href="airport.php">Add new airport</a></li>
-    <li><a href="users.php">See users</a></li>
-    <li><a href="support_tickets.php">Ask for help</a></li>
     <li><a href="logout.php">Logout</a></li>
 </ul>
 
